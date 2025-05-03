@@ -215,7 +215,7 @@ document.getElementById('tt-btn').addEventListener('click', () => {
     text1.style.fontSize = currentFontSize + 'px';
     text2.style.fontSize = currentFontSize + 'px';
 });
-
+  
 for (var fileName in providedTexts) {
     var option = document.createElement('option');
     option.value = fileName;
@@ -235,6 +235,7 @@ function rearrangeLayout() {
 
 function resetLayout() {
     outputDiv.style.display = 'none';
+    document.getElementById('side-panel').style.display = 'flex';
     heading.textContent = 'Typing Test';
     document.getElementById('text-container').style.display = 'grid';
     text2.value = '';
@@ -374,8 +375,26 @@ restart.addEventListener('click', function () {
 
 document.getElementById('submit2').addEventListener('click', function () { submit.click() });
 submit.addEventListener('click', function () {
-    var word1 = text1.value.trim().split(/\s+/);
-    var word2 = text2.value.trim().split(/\s+/);
+const considerComma = document.getElementById('considerComma').checked;
+const considerPeriod = document.getElementById('considerPeriod').checked;
+const considerCase = document.getElementById('considerCase').checked;
+let inputText1 = text1.value;
+let inputText2 = text2.value;
+
+if (!considerComma) {
+  inputText1 = inputText1.replace(/,/g, '');
+  inputText2 = inputText2.replace(/,/g, '');
+}
+if (!considerPeriod) {
+  inputText1 = inputText1.replace(/\./g, '');
+  inputText2 = inputText2.replace(/\./g, '');
+}
+if (!considerCase) {
+  inputText1 = inputText1.toLowerCase();
+  inputText2 = inputText2.toLowerCase();
+}
+    var word1 = inputText1.trim().split(/\s+/);
+    var word2 = inputText2.trim().split(/\s+/);
     var wordCount1 = word1.length;
     var wordCount2 = word2.length;
     var charCount1 = text1.value.length;
@@ -383,66 +402,87 @@ submit.addEventListener('click', function () {
     var charWord1 = Math.round(charCount1 / 5);
     var charWord2 = Math.round(charCount2 / 5);
     rearrangeLayout();
-    submitButtonClicked = true;
     var L = lcs(word2, word1);
     var redWords = L.redWords.slice().reverse();
-    var orangeWords = L.orangeWords.slice().reverse();
     var blueWords = L.blueWords.slice().reverse();
     var red = redWords.length;
+    var orangeWords = L.orangeWords.slice().reverse();
     var orange = orangeWords.length;
     var blue = blueWords.length;
     var fm = red + orange;
     var error = errorsPercentage(fm, blue, wordCount1);
-
     
-    if (!increaseTime){
-        timeTotal = timeTotal - timeLeft;
+    if (!submitButtonClicked) {
+        if (!increaseTime) {
+            timeTotal = timeTotal - timeLeft;
+        } else {
+            timeTotal = timeTotal + timeLeft;
+        }
     }
-    else{
-        timeTotal = timeTotal + timeLeft;
-    }
-
+    
     if (wordCount2 > 1 && charCount2 > 1) {
         var wpm = Math.round(wordCount2 / (timeTotal / 60));
         var cpm = Math.round(charWord2 / (timeTotal / 60));
     } else {
-        wpm = cpm = "N/A"
+        wpm = cpm = "0"
     }
 
-    //textarea
-    document.getElementById('o-text1').value = text1.value;
-    document.getElementById('o-text2').value = text2.value;
-
-    //result
-    result.innerHTML = `<b>Total Words: </b>` + wordCount1 + ' words, (' + charWord1 + '*5)=' + charCount1 + ' characters; <br>';
-    result.innerHTML += `<b>Words typed: </b>` + wordCount2 + ' words, (' + charWord2 + '*5)=' + charCount2 + ' characters ; <br>';
-    result.innerHTML += `<b>Full Mistakes : </b>` + fm + '; <br>';
-    result.innerHTML += `<b>Half Mistakes : </b>` + blue + '; <br>';
-    result.innerHTML += `<b>Error Percentage: </b>` + error + '%; <br>';
-    result.innerHTML += `<b>Total time taken: </b>` + Math.floor(timeTotal / 60) + ':' + (timeTotal) % 60 + '; <br>';
-    result.innerHTML += `<b>Typing speed : </b>` + wpm + ' WPM (' + cpm + '*5)=' + cpm * 5 + ' CPM] ; <br>';
-
+  document.querySelector('#result').innerHTML = `
+  <div class="results-grid">
+  <div class="result-card"><span>Typing Speed</span><strong>${wpm} WPM (${cpm})</strong></div>
+  <div class="result-card"><span>Time Taken</span><strong>${Math.floor(timeTotal / 60)}:${(timeTotal % 60).toString().padStart(2, '0')}</strong></div>
+  <div class="result-card"><span>Error</span><strong>${error}%</strong></div>
+  <div class="result-card"><span>Full Mistakes</span><strong>${fm}</strong></div>
+  <div class="result-card"><span>Half Mistakes</span><strong>${blue}</strong></div>
+  <div class="result-card"><span>Total Words</span><strong>${wordCount1 + ' ('+charWord1+')'}</strong></div>
+  <div class="result-card"><span>Words Typed</span><strong>${wordCount2 + ' ('+charWord2+')'}</strong></div>
+  </div>
+`;
 
     // output
     output.innerHTML = L.output + '<br>';
-
-    //output2
-    output2.innerHTML = '<b>Half Mistakes:</b><ol>';
-    blueWords.forEach(function (word, index) {
-        output2.innerHTML += (index + 1) + '.' + word + '; ';
-    });
-    output2.innerHTML += '</ol><br><br>';
-
-    output2.innerHTML += '<b>Missing Words:</b><ol>';
-    redWords.forEach(function (word, index) {
-        output2.innerHTML += (index + 1) + '.<span class="red">' + word + '</span>; ';
-    });
-    output2.innerHTML += '</ol><br><br>';
-
-    output2.innerHTML += '<b>Extra Words:</b><ol>';
-    orangeWords.forEach(function (word, index) {
-        output2.innerHTML += (index + 1) + '.<span class="red orange">' + word + '</span>; ';
-    });
-    output2.innerHTML += '</ol><br><br>';
+    submitButtonClicked = true;
 });
 
+const checkboxes = document.querySelectorAll('.checkbox-controls input[type="checkbox"]');
+checkboxes.forEach(checkbox => {
+  checkbox.addEventListener('change', () => {
+    submit.click(); // Trigger the submit button's click handler
+  });
+});
+
+
+/*
+document.getElementById('download-pdf').addEventListener('click', () => {
+    const el = document.getElementById('output-div');
+    
+const pxToPt = px => px * 0.75;
+const pdfWidth  = pxToPt(el.offsetWidth);
+const pdfHeight = pxToPt(el.offsetHeight);
+
+html2pdf()
+  .set({
+    margin: 0,
+    jsPDF:    { unit: 'pt', format: [pdfWidth, pdfHeight] },
+    html2canvas: { scale: 2, width: el.offsetWidth, height: el.offsetHeight }
+  })
+  .from(el)
+  .save('typing-results.pdf');
+
+  });
+*/
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('keydown', function(event) {
+      if (event.shiftKey && event.key === 'Enter') {
+        event.preventDefault();
+        submit.click()      }
+        if ((event.ctrlKey || event.metaKey) && event.key === 'r') {
+            event.preventDefault();
+            restart.click()      }    
+        if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+            event.preventDefault();
+            document.getElementById('download-pdf').click()      }
+    });
+  });
+  

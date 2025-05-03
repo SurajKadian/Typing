@@ -35,12 +35,6 @@
     ]
   }
   </script>
-  <!-- jsPDF v2.x CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- :contentReference[oaicite:0]{index=0} -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
 
 </head>
 
@@ -136,14 +130,12 @@
     </div>
   </div>
   <div id="output-div" class="output-div" style="display: none;">
-    <!--<button id="download-pdf">Download PDF</button>-->
-    <div id="result"></div>
-    <div class="checkbox-controls">
-      <label><input type="checkbox" id="considerComma">Comma</label>
-      <label><input type="checkbox" id="considerPeriod" checked> Full Stop</label>
-      <label><input type="checkbox" id="considerCase" checked> Capitalisation</label>
-    </div>    
+    <div class="output-textarea"><textarea id="o-text1" class="output"></textarea>
+      <textarea id="o-text2" class="output"></textarea>
+    </div>
+    <div id="result" class="output"></div>
     <div id="output" class="output"></div>
+    <div id="detailedOutput" class="output"></div>
   </div>
 
   <div id="footer-btn" class="side-footer footer">
