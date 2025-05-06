@@ -402,11 +402,26 @@ button:active img {
     border-radius: 16px;
 }
 
-.checkbox-controls input[type="checkbox"] {
+.checkbox-controls :hover {
+    border-radius: 8px;
+    background-color: var(--background-color2);
+    transform: scale(0.96);
+}
+
+input[type="checkbox"].round-checkbox {
+    -webkit-appearance: none;
+    appearance: none;
     width: 16px;
     height: 16px;
-    accent-color: var(--accent-color);
     cursor: pointer;
+    border-radius: 50%;
+    position: relative;
+    border: 1px solid;
+    border-color: var(--accent-color);
+}
+
+input[type="checkbox"].round-checkbox:checked {
+    background-color: var(--accent-color);
 }
 
 .output-div {

@@ -429,13 +429,13 @@ if (!considerCase) {
 
   document.querySelector('#result').innerHTML = `
   <div class="results-grid">
-  <div class="result-card"><span>Typing Speed</span><strong>${wpm} WPM (${cpm})</strong></div>
-  <div class="result-card"><span>Time Taken</span><strong>${Math.floor(timeTotal / 60)}:${(timeTotal % 60).toString().padStart(2, '0')}</strong></div>
-  <div class="result-card"><span>Error</span><strong>${error}%</strong></div>
-  <div class="result-card"><span>Full Mistakes</span><strong>${fm}</strong></div>
-  <div class="result-card"><span>Half Mistakes</span><strong>${blue}</strong></div>
-  <div class="result-card"><span>Total Words</span><strong>${wordCount1 + ' ('+charWord1+')'}</strong></div>
-  <div class="result-card"><span>Words Typed</span><strong>${wordCount2 + ' ('+charWord2+')'}</strong></div>
+  <div class="result-card"><span>Typing Speed:</span><strong>${wpm} WPM (${cpm})</strong></div>
+  <div class="result-card"><span>Error:</span><strong>${error}%</strong></div>
+  <div class="result-card"><span>Full Mistakes:</span><strong>${fm}</strong></div>
+  <div class="result-card"><span>Half Mistakes:</span><strong>${blue}</strong></div>
+  <div class="result-card"><span>Total Words:</span><strong>${wordCount1 + ' ('+charWord1+')'}</strong></div>
+  <div class="result-card"><span>Words Typed:</span><strong>${wordCount2 + ' ('+charWord2+')'}</strong></div>
+  <div class="result-card"><span>Time Taken:</span><strong>${Math.floor(timeTotal / 60)}:${(timeTotal % 60).toString().padStart(2, '0')}</strong></div>
   </div>
 `;
 
