@@ -5,7 +5,6 @@ var restart = document.getElementById("restart");
 var outputDiv = document.getElementById("output-div");
 var result = document.getElementById('result');
 var output = document.getElementById("output");
-var output2 = document.getElementById('detailedOutput');
 var heading = document.querySelector('.top-bar h1');
 var sidePanel = document.getElementById('side-panel');
 var footerBtn = document.getElementById('footer-btn');
@@ -22,6 +21,7 @@ let remainingTime = 0;
 let hm = 70;
 const palettes = ['palette1', 'palette2', 'palette3', 'palette4', 'palette5', 'palette6', 'palette7'];
 let currentPaletteIndex = 0;
+let stenoLayoutOn=false;
 
 document.getElementById('palette-btn').addEventListener('click', () => {
     document.body.classList.remove(palettes[currentPaletteIndex]);
@@ -39,6 +39,7 @@ function startTimer() {
         timerInterval = setInterval(updateTimer, 1000);
         timerStarted = true;
     }
+    document.getElementById('toggle-container').style.display = 'none';
 }
 
 text2.addEventListener('input', startTimer);
@@ -47,8 +48,7 @@ document.getElementById('edit-time').addEventListener('click', function () {
     if (!submitButtonClicked) {
         const newTime = window.prompt('Enter new time (mm:ss):', '10:00');
         if (newTime !== null) {
-            const timerDisplay = document.getElementById('timer');
-            timerDisplay.textContent = `Time: ${newTime}`;
+            timer.textContent = `Time: ${newTime}`;
             timeLeft = parseTimeToSeconds(newTime);
             timeTotal = parseTimeToSeconds(newTime);
         }
@@ -177,10 +177,6 @@ function randomText() {
     dropdown.dispatchEvent(event);
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    randomText();
-});
-
 document.getElementById('text-selector').addEventListener('change', function () {
     var selectedFileName = this.value;
     var selectedFileUrl = providedTexts[selectedFileName];
@@ -207,6 +203,15 @@ document.getElementById('fullscreen-btn').addEventListener('click', function () 
     }
 });
 
+document.getElementById('steno-btn').addEventListener('click', function () {
+    if (!stenoLayoutOn) {
+        stenoLayout();
+    } else {
+        typingLayout();
+        
+    }
+});
+
 document.getElementById('tt-btn').addEventListener('click', () => {
     currentFontSize += 2;
     if (currentFontSize > 22) {
@@ -223,9 +228,35 @@ for (var fileName in providedTexts) {
     document.getElementById('text-selector').appendChild(option);
 }
 
+function typingLayout() {
+    stenoLayoutOn = false;
+    document.getElementById('modeToggle').checked = false;
+    text1.style.display = 'block';
+    text2.style.display = 'block';
+    text2.style.height = '30vh';
+    text2.style.width = '56vw';
+    text1.style.height = '30vh';
+    text1.style.width = '56vw';
+    timer.textContent = `Time: 10:00`;
+    timeLeft = 600;
+    timeTotal = 600;
+}
+
+function stenoLayout() {
+    stenoLayoutOn = true;
+    text1.style.display = 'none';
+    text2.style.height = '42vh';
+    text2.style.width = '60vw';
+    timer.textContent = `Time: 50:00`;
+    timeLeft = 3000 ;
+    timeTotal = 3000;
+    text1.value='';
+}
+
 function rearrangeLayout() {
     outputDiv.style.display = 'block';
     footerBtn.style.display = 'none';
+    document.getElementById('toggle-container').style.display = 'none';
     heading.textContent = 'Results';
     clearInterval(timerInterval);
     //document.getElementById('top-bar').style.background = 'transparent';
@@ -235,9 +266,12 @@ function rearrangeLayout() {
 
 function resetLayout() {
     outputDiv.style.display = 'none';
-    document.getElementById('side-panel').style.display = 'flex';
     heading.textContent = 'Typing Test';
     document.getElementById('text-container').style.display = 'grid';
+    stenoLayoutOn=false;
+}
+
+function resetText() {
     text2.value = '';
     clearInterval(timerInterval);
     timeTotal = 600;
@@ -249,6 +283,10 @@ function resetLayout() {
     timer.textContent = `Time: 10:00`;
     randomText();
 }
+
+document.getElementById('edit-text').addEventListener('click', () => {
+    resetLayout();
+});
 
 function errorsPercentage(fullMistakes, halfMistakes, totalWords) {
     if (!isNaN(fullMistakes) && !isNaN(halfMistakes) && !isNaN(totalWords)) {
@@ -371,88 +409,101 @@ function lcs(text1, text2) {
 document.getElementById('restart2').addEventListener('click', function () { restart.click() });
 restart.addEventListener('click', function () {
     resetLayout();
+    resetText();
 });
 
 document.getElementById('submit2').addEventListener('click', function () { submit.click() });
 submit.addEventListener('click', function () {
-    const invisibleChar = '\u200B ';
-    let inputText1 = invisibleChar + text1.value;
-    let inputText2 = invisibleChar + text2.value;
 
-    const considerComma = document.getElementById('considerComma').checked;
-    const considerPeriod = document.getElementById('considerPeriod').checked;
-    const considerCase = document.getElementById('considerCase').checked;
-    const considerAllPunctuation = document.getElementById('considerAllPunctuation').checked;
-
-    if (considerAllPunctuation) {
-
-        if (!considerComma) {
-            inputText1 = inputText1.replace(/,/g, '');
-            inputText2 = inputText2.replace(/,/g, '');
-        }
-
-        if (!considerPeriod) {
-            inputText1 = inputText1.replace(/\./g, '');
-            inputText2 = inputText2.replace(/\./g, '');
-        }
-    } else {
-
-        inputText1 = inputText1.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, '');
-        inputText2 = inputText2.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, '');
+    if (stenoLayoutOn) {
+        clearInterval(timerInterval);
+        text2.style.display = 'none';
+        text1.style.display = 'block';
+        text1.style.height = '42vh';
+        text1.style.width = '60vw';
+        stenoLayoutOn=false;
     }
+    else {
+        
+        rearrangeLayout();
+        const invisibleChar = '\u200B ';
+        let inputText1 = invisibleChar + text1.value;
+        let inputText2 = invisibleChar + text2.value;
 
-    if (!considerCase) {
-        inputText1 = inputText1.toLowerCase();
-        inputText2 = inputText2.toLowerCase();
-    } var word1 = inputText1.trim().split(/\s+/);
-    var word2 = inputText2.trim().split(/\s+/);
-    var wordCount1 = word1.length;
-    var wordCount2 = word2.length;
-    var charCount1 = text1.value.length;
-    var charCount2 = text2.value.length;
-    var charWord1 = Math.round(charCount1 / 5);
-    var charWord2 = Math.round(charCount2 / 5);
-    rearrangeLayout();
-    var L = lcs(word2, word1);
-    var redWords = L.redWords.slice().reverse();
-    var blueWords = L.blueWords.slice().reverse();
-    var red = redWords.length;
-    var orangeWords = L.orangeWords.slice().reverse();
-    var orange = orangeWords.length;
-    var blue = blueWords.length;
-    var fm = red + orange;
-    var error = errorsPercentage(fm, blue, wordCount1);
+        const considerComma = document.getElementById('considerComma').checked;
+        const considerPeriod = document.getElementById('considerPeriod').checked;
+        const considerCase = document.getElementById('considerCase').checked;
+        const considerAllPunctuation = document.getElementById('considerAllPunctuation').checked;
 
-    if (!submitButtonClicked) {
-        if (!increaseTime) {
-            timeTotal = timeTotal - timeLeft;
+        if (considerAllPunctuation) {
+
+            if (!considerComma) {
+                inputText1 = inputText1.replace(/,/g, '');
+                inputText2 = inputText2.replace(/,/g, '');
+            }
+
+            if (!considerPeriod) {
+                inputText1 = inputText1.replace(/\./g, '');
+                inputText2 = inputText2.replace(/\./g, '');
+            }
         } else {
-            timeTotal = timeTotal + timeLeft;
+
+            inputText1 = inputText1.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, '');
+            inputText2 = inputText2.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, '');
         }
+
+        if (!considerCase) {
+            inputText1 = inputText1.toLowerCase();
+            inputText2 = inputText2.toLowerCase();
+        } 
+        var word1 = inputText1.trim().split(/\s+/);
+        var word2 = inputText2.trim().split(/\s+/);
+        var wordCount1 = word1.length;
+        var wordCount2 = word2.length;
+        var charCount1 = text1.value.length;
+        var charCount2 = text2.value.length;
+        var charWord1 = Math.round(charCount1 / 5);
+        var charWord2 = Math.round(charCount2 / 5);
+        var L = lcs(word2, word1);
+        var redWords = L.redWords.slice().reverse();
+        var blueWords = L.blueWords.slice().reverse();
+        var red = redWords.length;
+        var orangeWords = L.orangeWords.slice().reverse();
+        var orange = orangeWords.length;
+        var blue = blueWords.length;
+        var fm = red + orange;
+        var error = errorsPercentage(fm, blue, wordCount1);
+
+        if (!submitButtonClicked) {
+            if (!increaseTime) {
+                timeTotal = timeTotal - timeLeft;
+            } else {
+                timeTotal = timeTotal + timeLeft;
+            }
+        }
+
+        if (wordCount2 > 1 && charCount2 > 1) {
+            var wpm = Math.round(wordCount2 / (timeTotal / 60));
+            var cpm = Math.round(charWord2 / (timeTotal / 60));
+        } else {
+            wpm = cpm = "0"
+        }
+
+        document.querySelector('#result').innerHTML = `
+            <div class="results-grid">
+            <div class="result-card"><span>Typing Speed:</span><strong>${wpm} WPM (${cpm})</strong></div>
+            <div class="result-card"><span>Error:</span><strong>${error}%</strong></div>
+            <div class="result-card"><span>Full Mistakes:</span><strong>${fm}</strong></div>
+            <div class="result-card"><span>Half Mistakes:</span><strong>${blue}</strong></div>
+            <div class="result-card"><span>Total Words:</span><strong>${wordCount1 + ' (' + charWord1 + ')'}</strong></div>
+            <div class="result-card"><span>Words Typed:</span><strong>${wordCount2 + ' (' + charWord2 + ')'}</strong></div>
+            <div class="result-card"><span>Time Taken:</span><strong>${Math.floor(timeTotal / 60)}:${(timeTotal % 60).toString().padStart(2, '0')}</strong></div>
+            </div>`;
+
+        // output
+        output.innerHTML = L.output + '<br>';
+        submitButtonClicked = true;
     }
-
-    if (wordCount2 > 1 && charCount2 > 1) {
-        var wpm = Math.round(wordCount2 / (timeTotal / 60));
-        var cpm = Math.round(charWord2 / (timeTotal / 60));
-    } else {
-        wpm = cpm = "0"
-    }
-
-    document.querySelector('#result').innerHTML = `
-  <div class="results-grid">
-  <div class="result-card"><span>Typing Speed:</span><strong>${wpm} WPM (${cpm})</strong></div>
-  <div class="result-card"><span>Error:</span><strong>${error}%</strong></div>
-  <div class="result-card"><span>Full Mistakes:</span><strong>${fm}</strong></div>
-  <div class="result-card"><span>Half Mistakes:</span><strong>${blue}</strong></div>
-  <div class="result-card"><span>Total Words:</span><strong>${wordCount1 + ' (' + charWord1 + ')'}</strong></div>
-  <div class="result-card"><span>Words Typed:</span><strong>${wordCount2 + ' (' + charWord2 + ')'}</strong></div>
-  <div class="result-card"><span>Time Taken:</span><strong>${Math.floor(timeTotal / 60)}:${(timeTotal % 60).toString().padStart(2, '0')}</strong></div>
-  </div>
-`;
-
-    // output
-    output.innerHTML = L.output + '<br>';
-    submitButtonClicked = true;
 });
 
 const checkboxes = document.querySelectorAll('.checkbox-controls input[type="checkbox"]');
@@ -463,6 +514,7 @@ checkboxes.forEach(checkbox => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    randomText();
     document.addEventListener('keydown', function (event) {
         if (event.shiftKey && event.key === 'Enter') {
             event.preventDefault();
@@ -477,4 +529,12 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('download-pdf').click()
         }
     });
+});
+
+document.getElementById('modeToggle').addEventListener('change', function () {
+    if (this.checked) {
+        stenoLayout();
+    } else {
+        typingLayout();
+    }
 });

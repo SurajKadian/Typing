@@ -9,7 +9,7 @@
   <meta name="description"
     content="Minimalist free typing practice website for SSC typing skill test or any other government exam's typing skill test, with layout similar to that of SSC">
   <meta name="keywords"
-    content="@SurajKadian, typing test, typing speed, typing accuracy, online typing test, typing practice, SSC typing,SSC exam, SSC layout, Government exam, skill test, steno">
+    content="@SurajKadian, typing test, typing speed, typing accuracy, online typing test, typing practice, SSC typing,SSC exam, SSC layout, Government exam, skill test, steno, steno software, typing software">
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="img/logo.svg">
@@ -27,8 +27,8 @@
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Suraj Kadian",
-    "url": "https://www.surajkadian.github.io/typing-practice/",
-    "logo": "https://www.surajkadian.github.io/typing-practice/img/icon.png",
+    "url": "https://www.surajkadian.github.io/Typing/",
+    "logo": "https://www.surajkadian.github.io/Typing/img/icon.png",
     "sameAs": [
       "https://www.t.me/surajkadian/",
       "https://github.com/SurajKadian"
@@ -38,6 +38,13 @@
 </head>
 
 <body class="palette1" id="body">
+
+  <div class="toggle-container" id="toggle-container">
+    <label class="toggle">
+      <input type="checkbox" id="modeToggle">
+      <span class="toggle-label" id="toggleLabel">Steno Layout</span>
+    </label>
+  </div>
 
   <div id="top-bar" class="top-bar">
     <h1>Typing Test</h1>
@@ -93,6 +100,12 @@
         <button id="up-btn" class="icons" alt="Upload Text File">
           <img src="img/up.svg" class="svg" width="14" height="14">Upload Text File
           <input type="file" id="file-input" accept=".txt" style="display: none;">
+        </button>
+        <button id="edit-text" class="icons" alt="Edit Input Texts">
+          <img src="img/faq.svg" class="svg" width="14" height="14">Edit Input Texts
+        </button>
+        <button id="steno-btn" class="icons" alt="Steno Layout Button">
+          <img src="img/kb.svg" class="svg" width="14" height="14"><span>Steno Layout</span>
         </button>
         <button id="faq-btn" class="icons" alt="Frequently Asked Questions">
           <img src="img/faq.svg" class="svg" width="14" height="14">FAQs
