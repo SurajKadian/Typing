@@ -35,16 +35,9 @@
     ]
   }
   </script>
-  <!-- jsPDF v2.x CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- :contentReference[oaicite:0]{index=0} -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-
 </head>
 
-<body class="palette1">
+<body class="palette1" id="body">
 
   <div id="top-bar" class="top-bar">
     <h1>Typing Test</h1>
@@ -136,13 +129,21 @@
     </div>
   </div>
   <div id="output-div" class="output-div" style="display: none;">
-    <!--<button id="download-pdf">Download PDF</button>-->
     <div id="result"></div>
     <div class="checkbox-controls">
-      <label><input type="checkbox" class="round-checkbox" id="considerComma">Comma</label>
-      <label><input type="checkbox" class="round-checkbox" id="considerPeriod" checked> Full Stop</label>
-      <label><input type="checkbox" class="round-checkbox" id="considerCase" checked> Capitalisation</label>
-    </div>    
+      <div class="checkbox-controls p-cards">
+        <label><input type="checkbox" class="round-checkbox" id="considerAllPunctuation" checked>All Punctuation</label>
+        <label><input type="checkbox" class="round-checkbox" id="considerComma">Comma</label>
+        <label><input type="checkbox" class="round-checkbox" id="considerPeriod" checked> Full Stop</label>
+      </div>
+      <div class="checkbox-controls p-cards capital-div">
+        <label><input type="checkbox" class="round-checkbox" id="considerCase" checked> Capitalisation</label>
+      </div>
+      <div class="checkbox-controls p-cards download-pdf-div"><button id="download-pdf" class="icons"
+          onclick="window.print()" alt="Download Results Button">
+          <img src="img/DL.svg" class="svg" width="18" height="18"><span>Save Results</span></button>
+      </div>
+    </div>
     <div id="output" class="output"></div>
   </div>
 

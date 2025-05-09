@@ -12,9 +12,11 @@
 }
 
 .palette1 {
-    --background-color: #E8E8E8;
-    --background-color2: #F4F4F2;
-    --accent-color: #495464;
+    --background-color: #f5f5f5;
+    --background-color2: #f9f9f9;
+    --card: #fff;
+    --accent-color: #393E46;
+    --hover-color: #f9f9f9;
 }
 
 .palette2 {
@@ -126,12 +128,13 @@ h1 {
     display: flex;
     align-items: center;
     background-color: var(--card);
-    border-radius: 4px;
+    border-radius: 16px;
     padding: 8px;
+    padding-inline: 20px;
     color: var(--accent-color);
     margin-left: 56vw;
     font-weight: normal;
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .menu-btn {
@@ -258,7 +261,7 @@ button {
 }
 
 button:hover {
-    background-color: var(--background-color2);
+    background-color: var(--hover-color);
 }
 
 button:active {
@@ -364,7 +367,7 @@ button:active img {
 
 .result-card:hover {
     border-radius: 10px;
-    background-color: var(--background-color2);
+    background-color: var(--hover-color);
     transform: scale(0.96);
     color: var(--text-background);
 }
@@ -383,9 +386,18 @@ button:active img {
 .checkbox-controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
-    margin: 1.5rem 0;
+    width: auto;
+    gap: 2rem;
+    margin: 0.5rem 0;
     padding: 0.5rem;
+    padding-inline: 0;
+}
+
+.p-cards {
+    padding-inline: 0.5rem;
+    background-color: var(--card);
+    gap: 0.5rem;
+    border-radius: 16px;
 }
 
 .checkbox-controls label {
@@ -402,10 +414,10 @@ button:active img {
     border-radius: 16px;
 }
 
-.checkbox-controls :hover {
+.p-cards :hover {
     border-radius: 8px;
-    background-color: var(--background-color2);
     transform: scale(0.96);
+    background-color: var(--hover-color);
 }
 
 input[type="checkbox"].round-checkbox {
@@ -424,6 +436,20 @@ input[type="checkbox"].round-checkbox:checked {
     background-color: var(--accent-color);
 }
 
+.download-pdf-div {
+    margin-left: auto;
+}
+
+#download-pdf {
+    border-radius: 16px;
+    padding: 2px;
+    padding-inline: 10px;
+}
+
+#download-pdf :hover {
+    transform: scale(1);
+}
+
 .output-div {
     display: flex;
     flex-direction: column;
@@ -440,7 +466,6 @@ input[type="checkbox"].round-checkbox:checked {
     background-color: var(--text-background);
     color: var(--text-color);
     padding: 10px;
-    margin-top: 20px;
     overflow: auto;
     text-align: left;
     align-items: center;
@@ -494,7 +519,6 @@ input[type="checkbox"].round-checkbox:checked {
         display: flex;
         margin-bottom: 2vh;
         justify-content: space-between;
-        background-color: black;
     }
 
     .side-footer button {
@@ -543,4 +567,59 @@ input[type="checkbox"].round-checkbox:checked {
 
 button:hover .label {
     display: block;
+}
+
+@media print {
+    body {
+        background-color: white;
+    }
+
+    button {
+        display: none;
+    }
+
+    .top-bar {
+        display: none;
+    }
+
+    .download-pdf-div {
+        display: none;
+    }
+
+    .capital-div {
+        margin-left: auto;
+    }
+
+    .red {
+        background-color: white;
+    }
+
+    .blue {
+        background-color: white;
+    }
+
+    .output-div {
+        margin: 0;
+        border: 1px solid #000;
+    }
+
+    .results-grid {
+        margin-top: 0.5rem;
+    }
+
+    .output {
+        border: 1px solid#000;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        --background-color: white;
+        --background-color2: white;
+
+        --card: #fff;
+        --border-color: #ccc;
+        --text-color: #000;
+        --text-background: white;
+    }
 }
