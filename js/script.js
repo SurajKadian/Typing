@@ -21,7 +21,7 @@ let remainingTime = 0;
 let hm = 70;
 const palettes = ['palette1', 'palette2', 'palette3', 'palette4', 'palette5', 'palette6', 'palette7'];
 let currentPaletteIndex = 0;
-let stenoLayoutOn=false;
+let stenoLayoutOn = false;
 
 document.getElementById('palette-btn').addEventListener('click', () => {
     document.body.classList.remove(palettes[currentPaletteIndex]);
@@ -208,7 +208,6 @@ document.getElementById('steno-btn').addEventListener('click', function () {
         stenoLayout();
     } else {
         typingLayout();
-        
     }
 });
 
@@ -248,9 +247,9 @@ function stenoLayout() {
     text2.style.height = '42vh';
     text2.style.width = '60vw';
     timer.textContent = `Time: 50:00`;
-    timeLeft = 3000 ;
+    timeLeft = 3000;
     timeTotal = 3000;
-    text1.value='';
+    text1.value = '';
 }
 
 function rearrangeLayout() {
@@ -268,7 +267,7 @@ function resetLayout() {
     outputDiv.style.display = 'none';
     heading.textContent = 'Typing Test';
     document.getElementById('text-container').style.display = 'grid';
-    stenoLayoutOn=false;
+    stenoLayoutOn = false;
 }
 
 function resetText() {
@@ -421,10 +420,10 @@ submit.addEventListener('click', function () {
         text1.style.display = 'block';
         text1.style.height = '42vh';
         text1.style.width = '60vw';
-        stenoLayoutOn=false;
+        stenoLayoutOn = false;
     }
     else {
-        
+
         rearrangeLayout();
         const invisibleChar = '\u200B ';
         let inputText1 = invisibleChar + text1.value;
@@ -436,26 +435,22 @@ submit.addEventListener('click', function () {
         const considerAllPunctuation = document.getElementById('considerAllPunctuation').checked;
 
         if (considerAllPunctuation) {
-
-            if (!considerComma) {
-                inputText1 = inputText1.replace(/,/g, '');
-                inputText2 = inputText2.replace(/,/g, '');
-            }
-
-            if (!considerPeriod) {
-                inputText1 = inputText1.replace(/\./g, '');
-                inputText2 = inputText2.replace(/\./g, '');
-            }
-        } else {
-
-            inputText1 = inputText1.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, '');
-            inputText2 = inputText2.replace(/[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g, '');
+            inputText1 = inputText1.replace(/[!"#$%&'()*+\-/:;<=>?@[\\\]^_`{|}~]/g, '');
+            inputText2 = inputText2.replace(/[!"#$%&'()*+\-/:;<=>?@[\\\]^_`{|}~]/g, '');
         }
-
+        if (!considerComma) {
+            inputText1 = inputText1.replace(/,/g, '');
+            inputText2 = inputText2.replace(/,/g, '');
+        }
+        if (!considerPeriod) {
+            inputText1 = inputText1.replace(/\./g, '');
+            inputText2 = inputText2.replace(/\./g, '');
+        }
         if (!considerCase) {
             inputText1 = inputText1.toLowerCase();
             inputText2 = inputText2.toLowerCase();
-        } 
+        }
+
         var word1 = inputText1.trim().split(/\s+/);
         var word2 = inputText2.trim().split(/\s+/);
         var wordCount1 = word1.length;

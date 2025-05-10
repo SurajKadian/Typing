@@ -602,6 +602,10 @@ button:hover .label {
         border: 1px solid #eee;
     }
 
+    .result-card strong {
+        font-size: 1rem;
+    }
+
     .p-cards {
         border: 1px solid #eee;
     }
