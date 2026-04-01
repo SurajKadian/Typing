@@ -167,9 +167,11 @@ h1 {
     resize: none;
     background-color: var(--text-background);
     color: var(--text-color);
+    overflow-y: auto;
+    white-space: pre-wrap;
 }
 
-textarea:focus {
+.textarea:focus {
     outline: none;
     letter-spacing: 0.6px;
     font-weight: 500;
@@ -177,17 +179,17 @@ textarea:focus {
     transform: translateY(1px);
 }
 
-textarea::-webkit-scrollbar {
+.textarea::-webkit-scrollbar {
     width: 10px;
 }
 
-textarea::-webkit-scrollbar-thumb {
+.textarea::-webkit-scrollbar-thumb {
     background-color: var(--border-color);
     border-radius: 5px;
     cursor: pointer;
 }
 
-textarea::-webkit-scrollbar-track {
+.textarea::-webkit-scrollbar-track {
     background-color: var(--text-background);
     border: 1px solid var(--border-color);
     cursor: pointer;
