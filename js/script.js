@@ -152,14 +152,16 @@ function loadTextFile(fileUrl) {
 document.getElementById('text-selector').addEventListener('change', function () {
     var url = providedTexts[this.value];
     if (url) {
-        const isHTML = url.endsWith('.html');
-    if (isHTML) {
-        text1.innerHTML = content;
-        masterLoadedFromFile = false;
-    } else {
-        text1.innerText = content;
-        masterLoadedFromFile = true;
-    }
+        loadTextFile(url).then(content => {
+            const isHTML = url.endsWith('.html');
+            if (isHTML) {
+                text1.innerHTML = content;
+                masterLoadedFromFile = false;
+            } else {
+                text1.innerText = content;
+                masterLoadedFromFile = true;
+            }
+        });
     } else {
         text1.innerHTML = '';
         masterLoadedFromFile = false;
