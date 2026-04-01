@@ -153,12 +153,12 @@ document.getElementById('text-selector').addEventListener('change', function () 
     var url = providedTexts[this.value];
     if (url) {
         loadTextFile(url).then(content => {
-            text1.innerText = content;
-            masterLoadedFromFile = true; // plain text — skip format checking
+            text1.innerHTML = content;
+
         });
     } else {
-        text1.innerText = '';
-        masterLoadedFromFile = false;
+        text1.innerHTML = '';
+
     }
 });
 
@@ -172,8 +172,7 @@ document.getElementById('file-input').addEventListener('change', function (event
     if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            text1.innerText = e.target.result;
-            masterLoadedFromFile = true; // plain text — skip format checking
+            text1.innerHTML = e.target.result;
         };
         reader.readAsText(file);
     }
@@ -181,7 +180,6 @@ document.getElementById('file-input').addEventListener('change', function (event
 
 // When user manually edits text1, treat as rich (format checking enabled)
 text1.addEventListener('input', function () {
-    masterLoadedFromFile = false;
 });
 
 // ============================================================
