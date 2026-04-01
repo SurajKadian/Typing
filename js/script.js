@@ -118,11 +118,13 @@ document.getElementById('pause-btn').addEventListener('click', function () {
     }
 });
 
+
+
 // ============================================================
 // TEXT FILES
 // ============================================================
 var providedTexts = {
-    '1': 'text/f001.html',   '2': 'text/CGL61.txt',   '3': 'text/CGL62.txt',
+    '1': 'text/CGL58.txt',   '2': 'text/CGL61.txt',   '3': 'text/CGL62.txt',
     '4': 'text/CGL64.txt',   '5': 'text/CGL66.txt',   '6': 'text/CHSL109.txt',
     '7': 'text/CHSL25.txt',  '8': 'text/CHSL26.txt',  '9': 'text/CHSL27.txt',
     '10': 'text/CHSL28.txt', '11': 'text/CHSL30.txt', '12': 'text/CHSL43.txt',
@@ -132,7 +134,7 @@ var providedTexts = {
     '22': 'text/CHSL58.txt', '23': 'text/CHSL60.txt', '24': 'text/CHSL62.txt',
     '25': 'text/CHSL7PY.txt','26': 'text/CHSL8PY.txt',
     '27': 'text/CapitalisationPractice.txt',
-    '28': 'text/SpellingPractice.txt','29': 'text/CGL58.txt'
+    '28': 'text/SpellingPractice.txt'
 };
 
 for (var fileName in providedTexts) {
@@ -152,17 +154,11 @@ document.getElementById('text-selector').addEventListener('change', function () 
     var url = providedTexts[this.value];
     if (url) {
         loadTextFile(url).then(content => {
-            const isHTML = url.endsWith('.html');
-            if (isHTML) {
-                text1.innerHTML = content;
-                masterLoadedFromFile = false;
-            } else {
-                text1.innerText = content;
-                masterLoadedFromFile = true;
-            }
+            text1.innerHTML = content;
+            masterLoadedFromFile = false; // plain text â€” skip format checking
         });
     } else {
-        text1.innerHTML = '';
+        text1.innerText = '';
         masterLoadedFromFile = false;
     }
 });
@@ -177,14 +173,8 @@ document.getElementById('file-input').addEventListener('change', function (event
     if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            const isHTML = file.name.endsWith('.html');
-            if (isHTML) {
-                text1.innerHTML = e.target.result;  // preserves formatting
-                masterLoadedFromFile = false;        // format check ON
-            } else {
-                text1.innerText = e.target.result;  // plain text
-                masterLoadedFromFile = true;         // format check OFF
-            }
+            text1.innerHTML = e.target.result;
+            masterLoadedFromFile = true; // plain text â€” skip format checking
         };
         reader.readAsText(file);
     }
@@ -201,13 +191,13 @@ text1.addEventListener('input', function () {
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
 function randomText() {
     var dropdown = document.getElementById('text-selector');
     var randomIndex = getRandomInt(0, dropdown.options.length - 1);
     dropdown.selectedIndex = randomIndex;
     dropdown.dispatchEvent(new Event('change'));
 }
+
 
 // ============================================================
 // LAYOUT HELPERS
