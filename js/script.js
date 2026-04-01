@@ -58,7 +58,6 @@ function startTimer() {
         timerInterval = setInterval(updateTimer, 1000);
         timerStarted = true;
     }
-    document.getElementById('toggle-container').style.display = 'none';
 }
 
 text2.addEventListener('input', startTimer);
