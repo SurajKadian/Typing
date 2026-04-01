@@ -39,13 +39,6 @@
 
 <body class="palette1" id="body">
 
-  <div class="toggle-container" id="toggle-container">
-    <label class="toggle">
-      <input type="checkbox" id="modeToggle">
-      <span class="toggle-label" id="toggleLabel">Steno Layout</span>
-    </label>
-  </div>
-
   <div id="top-bar" class="top-bar">
     <h1>Typing Test</h1>
     <div class="timer-div"><span id="timer" class="timer">Time: 10:00</span></div>
@@ -55,10 +48,10 @@
   </div>
 
   <div class="text-container" id="text-container">
-    <textarea id="text1" class="textarea" placeholder="Enter original text here" spellcheck="false" autocorrect="off"
-      autocapitalize="off"></textarea>
-    <textarea id="text2" class="textarea" placeholder="Start typing here..." spellcheck="false" autocorrect="off"
-      autocapitalize="off"></textarea>
+    <div id="text1" contenteditable="true" class="textarea" placeholder="Enter original text here" spellcheck="false" autocorrect="off"
+      autocapitalize="off"></div>
+    <div id="text2" contenteditable="true" class="textarea" placeholder="Start typing here..." spellcheck="false" autocorrect="off"
+      autocapitalize="off"></div>
   </div>
 
   <div class="side-panel" id="side-panel">
