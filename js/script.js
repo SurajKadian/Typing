@@ -123,7 +123,7 @@ document.getElementById('pause-btn').addEventListener('click', function () {
 // TEXT FILES
 // ============================================================
 var providedTexts = {
-    '1': 'text/f001.html',   '2': 'text/CGL61.txt',   '3': 'text/CGL62.txt',
+    '1': 'text/CGL58.txt',   '2': 'text/CGL61.txt',   '3': 'text/CGL62.txt',
     '4': 'text/CGL64.txt',   '5': 'text/CGL66.txt',   '6': 'text/CHSL109.txt',
     '7': 'text/CHSL25.txt',  '8': 'text/CHSL26.txt',  '9': 'text/CHSL27.txt',
     '10': 'text/CHSL28.txt', '11': 'text/CHSL30.txt', '12': 'text/CHSL43.txt',
@@ -133,7 +133,7 @@ var providedTexts = {
     '22': 'text/CHSL58.txt', '23': 'text/CHSL60.txt', '24': 'text/CHSL62.txt',
     '25': 'text/CHSL7PY.txt','26': 'text/CHSL8PY.txt',
     '27': 'text/CapitalisationPractice.txt',
-    '28': 'text/SpellingPractice.txt','29': 'text/CGL58.txt'
+    '28': 'text/SpellingPractice.txt'
 };
 
 for (var fileName in providedTexts) {
@@ -154,11 +154,11 @@ document.getElementById('text-selector').addEventListener('change', function () 
     if (url) {
         loadTextFile(url).then(content => {
             text1.innerHTML = content;
-
+            masterLoadedFromFile = true; // plain text — skip format checking
         });
     } else {
         text1.innerHTML = '';
-
+        masterLoadedFromFile = false;
     }
 });
 
@@ -172,7 +172,8 @@ document.getElementById('file-input').addEventListener('change', function (event
     if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            text1.innerHTML = e.target.result;
+            text1.innerText = e.target.result;
+            masterLoadedFromFile = true; // plain text — skip format checking
         };
         reader.readAsText(file);
     }
@@ -180,6 +181,7 @@ document.getElementById('file-input').addEventListener('change', function (event
 
 // When user manually edits text1, treat as rich (format checking enabled)
 text1.addEventListener('input', function () {
+    masterLoadedFromFile = false;
 });
 
 // ============================================================
@@ -267,6 +269,255 @@ document.getElementById('text2').addEventListener('keydown', function (e) {
         if (e.key === 'r') { e.preventDefault(); document.execCommand('justifyRight'); }
         if (e.key === 'j') { e.preventDefault(); document.execCommand('justifyFull'); }
         // Ctrl+B (bold), Ctrl+I (italic), Ctrl+U (underline) work natively in contenteditable
+    }
+});
+
+// ============================================================
+// FORMATTING HELPERS
+// ============================================================
+
+/**
+ * Walks a contenteditable div and returns an array of
+ * { word, bold, italic, underline, align } for every word.
+ */
+function getFormattedWords(editorDiv) {
+    const words = [];
+
+    function getStyleAt(node) {
+        let bold = false, italic = false, underline = false, align = 'left';
+        let el = node.nodeType === 3 ? node.parentElement : node;
+
+        while (el && el !== editorDiv) {
+            const tag = el.tagName;
+            const style = window.getComputedStyle(el);
+
+            if (tag === 'B' || tag === 'STRONG' || parseInt(style.fontWeight) >= 700) bold = true;
+            if (tag === 'I' || tag === 'EM' || style.fontStyle === 'italic') italic = true;
+            if (tag === 'U' || style.textDecorationLine.includes('underline')) underline = true;
+
+            const ta = style.textAlign;
+            if (ta && ta !== 'start') align = ta;
+
+            el = el.parentElement;
+        }
+        return { bold, italic, underline, align };
+    }
+
+    function walk(node) {
+        if (node.nodeType === 3) {
+            const style = getStyleAt(node);
+            node.textContent.split(/\s+/).filter(w => w.length > 0)
+                .forEach(w => words.push({ word: w, ...style }));
+        } else {
+            node.childNodes.forEach(walk);
+        }
+    }
+
+    walk(editorDiv);
+    return words;
+}
+
+/**
+ * Returns true if two word format objects match.
+ */
+function formatsMatch(f1, f2) {
+    if (!f1 || !f2) return true; // if either is missing, don't penalise
+    return f1.bold === f2.bold &&
+           f1.italic === f2.italic &&
+           f1.underline === f2.underline &&
+           f1.align === f2.align;
+}
+
+/**
+ * Describes expected format as a short string e.g. "bold+italic"
+ */
+function describeFormat(f) {
+    if (!f) return 'normal';
+    const parts = [];
+    if (f.bold) parts.push('bold');
+    if (f.italic) parts.push('italic');
+    if (f.underline) parts.push('underline');
+    if (f.align && f.align !== 'left') parts.push(f.align);
+    return parts.length ? parts.join('+') : 'normal';
+}
+
+/**
+ * Strips punctuation/case from a plain word string based on checkbox settings.
+ */
+function applyChecks(word, considerComma, considerPeriod, considerCase, considerAllPunctuation) {
+    if (!considerAllPunctuation) word = word.replace(/[!"#$%&'()*+\-/:;<=>?@[\\\]^_`{|}~]/g, '');
+    if (!considerComma)          word = word.replace(/,/g, '');
+    if (!considerPeriod)         word = word.replace(/\./g, '');
+    if (!considerCase)           word = word.toLowerCase();
+    return word;
+}
+
+// ============================================================
+// ERROR PERCENTAGE
+// ============================================================
+function errorsPercentage(fullMistakes, halfMistakes, totalWords) {
+    if (!isNaN(fullMistakes) && !isNaN(halfMistakes) && !isNaN(totalWords)) {
+        return (((fullMistakes + (halfMistakes / 2)) / totalWords) * 100).toFixed(2);
+    }
+    return 'Could not calculate Error Percentage!';
+}
+
+// ============================================================
+// LEVENSHTEIN DISTANCE
+// ============================================================
+function ld(word1, word2) {
+    var m = word1.length, n = word2.length;
+    var dp = [];
+    for (var i = 0; i <= m; i++) {
+        dp[i] = [];
+        for (var j = 0; j <= n; j++) {
+            if (i === 0) dp[i][j] = j;
+            else if (j === 0) dp[i][j] = i;
+            else if (word1[i - 1] === word2[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+            else dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+        }
+    }
+    var distance = dp[m][n];
+    var maxLength = Math.max(m, n);
+    return {
+        distance,
+        similarityPercentage: ((maxLength - distance) / maxLength) * 100
+    };
+}
+
+// ============================================================
+// LCS — CORE COMPARISON
+// fmt1 = typed word formats, fmt2 = master word formats
+// Pass null for both when format checking is disabled (txt files)
+// ============================================================
+function lcs(text1, text2, fmt1, fmt2) {
+    var m = text1.length, n = text2.length;
+    var output = '';
+    var redWords = [], orangeWords = [], blueWords = [];
+    var checkFormats = fmt1 !== null && fmt2 !== null;
+
+    var dp = [];
+    for (var i = 0; i <= m; i++) {
+        dp[i] = [];
+        for (var j = 0; j <= n; j++) dp[i][j] = -1;
+    }
+
+    function lcsLength(i, j) {
+        if (i === 0 || j === 0) return 0;
+        if (dp[i][j] !== -1) return dp[i][j];
+
+        if (text1[i - 1] === text2[j - 1]) {
+            dp[i][j] = 1 + lcsLength(i - 1, j - 1);
+        } else if (ld(text1[i - 1], text2[j - 1]).similarityPercentage >= hm &&
+                   ld(text1[i - 1], text2[j - 1]).similarityPercentage < 100) {
+            dp[i][j] = 0.5 + lcsLength(i - 1, j - 1);
+        } else {
+            dp[i][j] = Math.max(lcsLength(i - 1, j), lcsLength(i, j - 1));
+        }
+        return dp[i][j];
+    }
+
+    function constructLCS(i, j) {
+        if (i === 0 && j === 0) return '';
+
+        if (i === 0) {
+            // Word in master not found in typed → full mistake (red)
+            redWords.push(text2[j - 1]);
+            return '<span class="red">' + text2[j - 1] + '</span> ' + constructLCS(i, j - 1);
+        }
+
+        if (j === 0) {
+            // Word typed that isn't in master → full mistake (orange)
+            orangeWords.push(text1[i - 1]);
+            return '<span class="red orange">' + text1[i - 1] + '</span> ' + constructLCS(i - 1, j);
+        }
+
+        if (text1[i - 1] === text2[j - 1]) {
+            // Spelling matches — now check formatting (if enabled)
+            if (checkFormats) {
+                const tFmt = fmt1[j - 1]; // typed word format
+                const mFmt = fmt2[i - 1]; // master word format
+                if (!formatsMatch(mFmt, tFmt)) {
+                    // Correct spelling, wrong format → half mistake (blue)
+                    const expected = describeFormat(mFmt);
+                    blueWords.push(text1[i - 1]);
+                    return constructLCS(i - 1, j - 1)
+                        + `<span class="blue">${text1[i - 1]}<span class="green">{${expected}}</span></span> `;
+                }
+            }
+            // Fully correct
+            return constructLCS(i - 1, j - 1) + '<span>' + text1[i - 1] + '</span> ';
+
+        } else if (ld(text1[i - 1], text2[j - 1]).similarityPercentage >= hm &&
+                   ld(text1[i - 1], text2[j - 1]).similarityPercentage < 100) {
+            // Near-match spelling → half mistake (blue)
+            blueWords.push('<span class="blue">' + text1[i - 1] +
+                '<span class="green">{' + text2[j - 1] + '}</span></span>');
+            return constructLCS(i - 1, j - 1)
+                + '<span class="blue">' + text1[i - 1]
+                + '<span class="green">{' + text2[j - 1] + '}</span></span> ';
+
+        } else {
+            if (lcsLength(i - 1, j) >= lcsLength(i, j - 1)) {
+                orangeWords.push(text1[i - 1]);
+                return constructLCS(i - 1, j)
+                    + '<span class="red orange">' + text1[i - 1] + '</span> ';
+            } else {
+                redWords.push(text2[j - 1]);
+                return constructLCS(i, j - 1)
+                    + '<span class="red">' + text2[j - 1] + '</span> ';
+            }
+        }
+    }
+
+    output = constructLCS(m, n);
+    return { output, redWords, orangeWords, blueWords };
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+document.getElementById('submit2').addEventListener('click', () => submit.click());
+
+submit.addEventListener('click', function () {
+    rearrangeLayout();
+
+    // Read checkbox settings
+    const considerComma            = document.getElementById('considerComma').checked;
+    const considerPeriod           = document.getElementById('considerPeriod').checked;
+    const considerCase             = document.getElementById('considerCase').checked;
+    const considerAllPunctuation   = document.getElementById('considerAllPunctuation').checked;
+
+    // Get formatted word arrays from both divs
+    const masterWordsRaw = getFormattedWords(text1);
+    const typedWordsRaw  = getFormattedWords(text2);
+
+    // Apply punctuation/case settings to plain word strings
+    const masterPlainWords = masterWordsRaw
+        .map(w => applyChecks(w.word, considerComma, considerPeriod, considerCase, considerAllPunctuation))
+        .filter(w => w.length > 0);
+
+    const typedPlainWords = typedWordsRaw
+        .map(w => applyChecks(w.word, considerComma, considerPeriod, considerCase, considerAllPunctuation))
+        .filter(w => w.length > 0);
+
+    // Format arrays — null if loaded from file (format checking disabled)
+    const masterFmts = masterLoadedFromFile ? null : masterWordsRaw.map(w => ({ bold: w.bold, italic: w.italic, underline: w.underline, align: w.align }));
+    const typedFmts  = masterLoadedFromFile ? null : typedWordsRaw.map(w =>  ({ bold: w.bold, italic: w.italic, underline: w.underline, align: w.align }));
+
+    // Run comparison
+    // lcs(typed, master, typedFmts, masterFmts)
+    var L = lcs(typedPlainWords, masterPlainWords, typedFmts, masterFmts);
+
+    var redWords    = L.redWords.slice().reverse();
+    var orangeWords = L.orangeWords.slice().reverse();
+    var blueWords   = L.blueWords.slice().reverse();
+    var red    = redWords.length;
+    var orange = orangeWords.length;
+    var blue   = blueWords.length;
+    var fm     = red + orange;
+
+    // Word / char counts (use r), Ctrl+U (underline) work natively in contenteditable
     }
 });
 
