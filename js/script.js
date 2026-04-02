@@ -154,7 +154,7 @@ document.getElementById('text-selector').addEventListener('change', function () 
     if (url) {
         loadTextFile(url).then(content => {
             text1.innerHTML = content;
-            masterLoadedFromFile = true; // plain text â€” skip format checking
+            masterLoadedFromFile = false; // plain text â€” skip format checking
         });
     } else {
         text1.innerText = '';
@@ -173,7 +173,7 @@ document.getElementById('file-input').addEventListener('change', function (event
         const reader = new FileReader();
         reader.onload = function (e) {
             text1.innerHTML = e.target.result;
-            masterLoadedFromFile = true; // plain text â€” skip format checking
+            masterLoadedFromFile = false; // plain text â€” skip format checking
         };
         reader.readAsText(file);
     }
