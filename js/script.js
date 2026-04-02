@@ -118,11 +118,11 @@ function loadTextFile(fileUrl) {
 }
 
 var providedTexts = {
-    '1': 'text/CGL58.txt',
-    '2': 'text/CGL61.txt',
-    '3': 'text/CGL62.txt',
-    '4': 'text/CGL64.txt',
-    '5': 'text/CGL66.txt',
+    '1': 'text/f006.html',
+    '2': 'text/f005.html',
+    '3': 'text/f004.html',
+    '4': 'text/f003.html',
+    '5': 'text/f002.htm',
     '6': 'text/CHSL109.txt',
     '7': 'text/CHSL25.txt',
     '8': 'text/CHSL26.txt',
