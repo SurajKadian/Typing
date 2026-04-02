@@ -122,8 +122,11 @@ document.getElementById('pause-btn').addEventListener('click', function () {
 // TEXT FILES
 // ============================================================
 var providedTexts = {
-    '1': 'text/CGL58.txt',   '2': 'text/CGL61.txt',   '3': 'text/CGL62.txt',
-    '4': 'text/CGL64.txt',   '5': 'text/CGL66.txt',   '6': 'text/CHSL109.txt',
+    '1': 'text/CGL58.txt',
+    '2': 'text/CGL61.txt',
+    '3': 'text/CGL62.txt',
+    '4': 'text/CGL64.txt',
+    '5': 'text/CGL66.txt',   '6': 'text/CHSL109.txt',
     '7': 'text/CHSL25.txt',  '8': 'text/CHSL26.txt',  '9': 'text/CHSL27.txt',
     '10': 'text/CHSL28.txt', '11': 'text/CHSL30.txt', '12': 'text/CHSL43.txt',
     '13': 'text/CHSL44.txt', '14': 'text/CHSL45.txt', '15': 'text/CHSL46.txt',
