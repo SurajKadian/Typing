@@ -135,7 +135,11 @@ var providedTexts = {
     '22': 'text/CHSL58.txt', '23': 'text/CHSL60.txt', '24': 'text/CHSL62.txt',
     '25': 'text/CHSL7PY.txt','26': 'text/CHSL8PY.txt',
     '27': 'text/CapitalisationPractice.txt',
-    '28': 'text/SpellingPractice.txt'
+    '28': 'text/SpellingPractice.txt',
+    '29': 'text/f007.html',
+'30': 'text/f008.html',
+'31': 'text/f009.html',
+'32': 'text/f010.html'
 };
 
 for (var fileName in providedTexts) {
